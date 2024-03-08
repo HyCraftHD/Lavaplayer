@@ -59,3 +59,7 @@ fun VersionCatalogBuilder.test() {
     library("spock-core", "org.spockframework", "spock-core").version("2.4-M1-groovy-4.0")
     library("logback-classic", "ch.qos.logback", "logback-classic").version("1.4.8")
 }
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention").version("0.8.0")
+}

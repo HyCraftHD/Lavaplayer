@@ -33,7 +33,7 @@ subprojects {
     apply<MavenPublishPlugin>()
 
     configure<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.VERSION_1_8
+        toolchain.languageVersion = JavaLanguageVersion.of(8)
     }
 
     configure<PublishingExtension> {
