@@ -14,7 +14,7 @@ val (gitVersion, release) = versionFromGit()
 logger.lifecycle("Version: $gitVersion (release: $release)")
 
 allprojects {
-    group = "dev.arbjerg"
+    group = "net.hycrafthd"
     version = gitVersion
 
     repositories {
@@ -39,8 +39,8 @@ subprojects {
     configure<PublishingExtension> {
         if (findProperty("MAVEN_PASSWORD") != null && findProperty("MAVEN_USERNAME") != null) {
             repositories {
-                val snapshots = "https://maven.lavalink.dev/snapshots"
-                val releases = "https://maven.lavalink.dev/releases"
+                val snapshots = "https://repo.u-team.info"
+                val releases = "https://repo.u-team.info"
 
                 maven(if (release) releases else snapshots) {
                     credentials {
@@ -50,7 +50,7 @@ subprojects {
                 }
             }
         } else {
-            logger.lifecycle("Not publishing to maven.lavalink.dev because credentials are not set")
+            logger.lifecycle("Not publishing to repo.u-team.info because credentials are not set")
         }
     }
 
@@ -59,24 +59,15 @@ subprojects {
             configure<MavenPublishBaseExtension> {
                 coordinates(group.toString(), project.the<BasePluginExtension>().archivesName.get(), version.toString())
 
-                if (findProperty("mavenCentralUsername") != null && findProperty("mavenCentralPassword") != null) {
-                    publishToMavenCentral(SonatypeHost.S01, false)
-                    if (release) {
-                        signAllPublications()
-                    }
-                } else {
-                    logger.lifecycle("Not publishing to OSSRH due to missing credentials")
-                }
-
                 pom {
                     name = "lavaplayer"
-                    description = "A Lavaplayer fork maintained by Lavalink"
-                    url = "https://github.com/lavalink-devs/lavaplayer"
+                    description = "A Lavaplayer fork maintained by Lavalink forked again by HyCraftHD to support java 8"
+                    url = "https://github.com/HyCraftHD/Lavaplayer"
 
                     licenses {
                         license {
                             name = "The Apache License, Version 2.0"
-                            url = "https://github.com/lavalink-devs/lavaplayer/blob/main/LICENSE"
+                            url = "https://github.com/HyCraftHD/Lavaplayer/blob/main/LICENSE"
                         }
                     }
 
@@ -86,12 +77,17 @@ subprojects {
                             name = "Freya Arbjerg"
                             url = "https://www.arbjerg.dev"
                         }
+                        developer {
+                            id = "hycrafthd"
+                            name = "HyCraftHD"
+                            url = "https://www.hycrafthd.net"
+                        }
                     }
 
                     scm {
-                        url = "https://github.com/lavalink-devs/lavaplayer/"
-                        connection = "scm:git:git://github.com/lavalink-devs/lavaplayer.git"
-                        developerConnection = "scm:git:ssh://git@github.com/lavalink-devs/lavaplayer.git"
+                        url = "https://github.com/HyCraftHD/Lavaplayer/"
+                        connection = "scm:git:git://github.com/HyCraftHD/Lavaplayer.git"
+                        developerConnection = "scm:git:ssh://git@github.com/HyCraftHD/Lavaplayer.git"
                     }
                 }
             }
