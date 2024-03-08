@@ -14,7 +14,7 @@ val (gitVersion, release) = versionFromGit()
 logger.lifecycle("Version: $gitVersion (release: $release)")
 
 allprojects {
-    group = "net.hycrafthd"
+    group = "net.hycrafthd.lavaplayer"
     version = gitVersion
 
     repositories {
