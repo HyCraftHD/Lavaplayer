@@ -39,7 +39,7 @@ subprojects {
     configure<PublishingExtension> {
         if (findProperty("MAVEN_PASSWORD") != null && findProperty("MAVEN_USERNAME") != null) {
             repositories {
-                val snapshots = "https://repo.u-team.info"
+                val snapshots = "https://repo-snapshots.u-team.info"
                 val releases = "https://repo.u-team.info"
 
                 maven(if (release) releases else snapshots) {
