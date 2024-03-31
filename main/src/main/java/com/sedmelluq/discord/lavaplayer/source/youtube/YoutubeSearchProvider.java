@@ -52,6 +52,8 @@ public class YoutubeSearchProvider implements YoutubeSearchResultLoader {
 
         try (HttpInterface httpInterface = httpInterfaceManager.getInterface()) {
             HttpPost post = new HttpPost(SEARCH_URL);
+            // TODO: Keep an eye on this.
+            // Can't drop in WEB as it yields no results.
             YoutubeClientConfig clientConfig = YoutubeClientConfig.ANDROID.copy()
                 .withRootField("query", query)
                 .withRootField("params", SEARCH_PARAMS)
