@@ -14,7 +14,10 @@ import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.yamusic.YandexMusicAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A helper class for registering built-in source managers to a player manager.
@@ -69,7 +72,7 @@ public class AudioSourceManagers {
      */
     @SafeVarargs
     public static void registerRemoteSources(AudioPlayerManager playerManager, MediaContainerRegistry containerRegistry, Class<? extends AudioSourceManager>... excludedSources) {
-        var excluded = Set.of(excludedSources);
+        Set<Class<? extends AudioSourceManager>> excluded = Arrays.stream(excludedSources).collect(Collectors.toSet());
         if (!excluded.contains(YoutubeAudioSourceManager.class)) {
             playerManager.registerSourceManager(new YoutubeAudioSourceManager(true, null, null));
         }
