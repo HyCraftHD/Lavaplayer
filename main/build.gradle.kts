@@ -16,7 +16,6 @@ base {
 dependencies {
     api(projects.common)
     implementation(projects.nativesPublish)
-    implementation(libs.jaadec.fork)
     implementation(libs.rhino.engine)
     implementation(libs.slf4j)
 
@@ -29,6 +28,8 @@ dependencies {
     implementation(libs.jsoup)
     implementation(libs.base64)
     implementation(libs.json)
+
+    implementation(libs.intellij.annotations)
 
     testImplementation(libs.groovy)
     testImplementation(libs.spock.core)

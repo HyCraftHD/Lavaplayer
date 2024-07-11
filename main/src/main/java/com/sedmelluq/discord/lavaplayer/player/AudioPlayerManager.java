@@ -3,11 +3,13 @@ package com.sedmelluq.discord.lavaplayer.player;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
+import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.DecodedTrackHolder;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,6 +41,16 @@ public interface AudioPlayerManager {
      * @param sourceManager The source manager to register, which will be used for subsequent loadItem calls
      */
     void registerSourceManager(AudioSourceManager sourceManager);
+
+    /**
+     * Same as {@link #registerSourceManager(AudioSourceManager)} but registers multiple in one call.
+     * @param sourceManagers The source managers to register, which will be used for subsequent loadItem calls
+     */
+    default void registerSourceManagers(AudioSourceManager... sourceManagers) {
+        for (AudioSourceManager sourceManager : sourceManagers) {
+            registerSourceManager(sourceManager);
+        }
+    }
 
     /**
      * Shortcut for accessing a source manager of a certain class.
@@ -101,6 +113,29 @@ public interface AudioPlayerManager {
      * @see #loadItemSync(String, AudioLoadResultHandler)
      */
     void loadItemSync(final AudioReference reference, final AudioLoadResultHandler resultHandler);
+
+    /**
+     * Loads a track or playlist with the specified identifier and returns it.
+     *
+     * @param reference The audio reference that holds the identifier that a specific source manager
+     *                  should be able to find the track with.
+     * @return The loaded {@link AudioItem}, or `null` if nothing was found.
+     * @see #loadItemSync(AudioReference)
+     */
+    @Nullable
+    default AudioItem loadItemSync(final String reference) {
+        return loadItemSync(new AudioReference(reference, null));
+    }
+
+    /**
+     * Loads a track or playlist with the specified identifier and returns it.
+     *
+     * @param reference The audio reference that holds the identifier that a specific source manager
+     *                  should be able to find the track with.
+     * @return The loaded {@link AudioItem}, or `null` if nothing was found.
+     */
+    @Nullable
+    AudioItem loadItemSync(final AudioReference reference);
 
     /**
      * Schedules loading a track or playlist with the specified identifier with an ordering key so that items with the

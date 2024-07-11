@@ -31,8 +31,9 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
 
     private static final String TITLE_TAG = "TIT2";
     private static final String ARTIST_TAG = "TPE1";
+    private static final String ISRC_TAG = "TSRC";
 
-    private static final List<String> knownTextExtensions = Arrays.asList(TITLE_TAG, ARTIST_TAG);
+    private static final List<String> knownTextExtensions = Arrays.asList(TITLE_TAG, ARTIST_TAG, ISRC_TAG);
 
     private final AudioProcessingContext context;
     private final SeekableInputStream inputStream;
@@ -117,11 +118,7 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
      */
     public void provideFrames() throws InterruptedException {
         try {
-            while (true) {
-                if (!frameReader.fillFrameBuffer()) {
-                    break;
-                }
-
+            while (frameReader.fillFrameBuffer()) {
                 inputBuffer.clear();
                 inputBuffer.put(frameBuffer, 0, frameReader.getFrameSize());
                 inputBuffer.flip();
@@ -195,35 +192,42 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
     }
 
     private void skipIdv3Tags() throws IOException {
-        dataInput.readFully(tagHeaderBuffer, 0, 3);
+        byte[] lastTagHeader = new byte[4];
 
-        for (int i = 0; i < 3; i++) {
-            if (tagHeaderBuffer[i] != IDV3_TAG[i]) {
-                frameReader.appendToScanBuffer(tagHeaderBuffer, 0, 3);
+        for (int reads = 0; reads < 3; reads++) {
+            dataInput.readFully(lastTagHeader, 0, 3);
+
+            for (int i = 0; i < 3; i++) {
+                if (lastTagHeader[i] != IDV3_TAG[i]) {
+                    System.arraycopy(lastTagHeader, 0, tagHeaderBuffer, 0, 4);
+                    frameReader.appendToScanBuffer(tagHeaderBuffer, 0, 3);
+                    return;
+                }
+            }
+
+            int majorVersion = dataInput.readByte() & 0xFF;
+            // Minor version
+            dataInput.readByte();
+
+            if (majorVersion < 2 || majorVersion > 5) {
                 return;
             }
+
+            int flags = dataInput.readByte() & 0xFF;
+            int tagsSize = readSyncProofInteger();
+
+            long tagsEndPosition = inputStream.getPosition() + tagsSize;
+
+            skipExtendedHeader(flags);
+
+            if (majorVersion < 5) {
+                parseIdv3Frames(majorVersion, tagsEndPosition);
+            }
+
+            inputStream.seek(tagsEndPosition);
         }
 
-        int majorVersion = dataInput.readByte() & 0xFF;
-        // Minor version
-        dataInput.readByte();
-
-        if (majorVersion < 2 || majorVersion > 5) {
-            return;
-        }
-
-        int flags = dataInput.readByte() & 0xFF;
-        int tagsSize = readSyncProofInteger();
-
-        long tagsEndPosition = inputStream.getPosition() + tagsSize;
-
-        skipExtendedHeader(flags);
-
-        if (majorVersion < 5) {
-            parseIdv3Frames(majorVersion, tagsEndPosition);
-        }
-
-        inputStream.seek(tagsEndPosition);
+        throw new RuntimeException("Read more than 3 IDv3 blocks, file is possibly invalid");
     }
 
     private int readSyncProofInteger() throws IOException {
@@ -367,7 +371,7 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
 
     @Override
     public String getISRC() {
-        return null;
+        return getIdv3Tag(ISRC_TAG);
     }
 
     private static class FrameHeader {

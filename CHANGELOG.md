@@ -1,5 +1,37 @@
 # Change Log
 
+## [2.2.1] - 2024-07-09
+* Fixed reading of Matroska files with embedded SimpleTags https://github.com/lavalink-devs/lavaplayer/pull/133
+* Fixed reading of Matroska SimpleTags that contain UTF8 characters https://github.com/lavalink-devs/lavaplayer/pull/133
+* Added loadItemSync method to AudioPlayerManager without result handler https://github.com/lavalink-devs/lavaplayer/pull/134
+
+## [2.2.0] - 2024-06-05
+### Added
+* Added support for searching Bandcamp tracks
+* Added support for WAV files with 32 bit samples
+* Added support for reading ISRC from MP3, OGG and Matroska files
+* Added support for extracting ISRC from Bandcamp tracks
+* Added method for registering multiple source managers in one call
+
+### Fixed
+* Fixed AAC decoder initialisation
+* Fixed header validation of FLAC files
+* Fixed an issue with playing inner m3u8 playlists directly
+* Fixed a rare thread leak caused by a race condition when stopping track executors
+
+## [2.1.2] - 2024-05-05
+* Fixed Twitch source sometimes failing to initialise causing errors when registering source managers https://github.com/lavalink-devs/lavaplayer/pull/99
+* Fixed metadata extraction for some OGG files https://github.com/lavalink-devs/lavaplayer/pull/101
+* Fixed OGG opus duration extraction https://github.com/lavalink-devs/lavaplayer/pull/103
+* Fixed clamping of lower values during volume changing https://github.com/lavalink-devs/lavaplayer/pull/105
+* Improve handling of some MP3 files with multiple IDv3 blocks https://github.com/lavalink-devs/lavaplayer/pull/108
+* Added basic metadata extraction for Matroska files https://github.com/lavalink-devs/lavaplayer/pull/108
+* Bump `sourceCompatibility` specifically to Java 11 (Java 11 was already needed anyway) https://github.com/lavalink-devs/lavaplayer/pull/81
+* Add new `AudioSourceManagers.registerRemoteSources` method which allows excluding specific source managers from being registered (useful for excluding the old YouTube source manager)
+
+> [!WARNING]
+> The `YoutubeSourceManager` is now deprecated and won't receive further updates. Please use https://github.com/lavalink-devs/youtube-source#v2 instead.
+
 ## [2.1.1] -- 2024-10-03
 * Fixed invalid search request (code 400) https://github.com/lavalink-devs/lavaplayer/pull/70
 * Fixed YoutubeMpegStreamAudioTrack default to `0` if `state.absoluteSequence` is `null` https://github.com/lavalink-devs/lavaplayer/pull/73
