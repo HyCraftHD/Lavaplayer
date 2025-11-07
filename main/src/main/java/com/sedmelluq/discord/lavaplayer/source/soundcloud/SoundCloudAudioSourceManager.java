@@ -200,13 +200,19 @@ public class SoundCloudAudioSourceManager implements AudioSourceManager, HttpCon
         Matcher trackUrlMatcher = trackUrlPattern.matcher(url);
         if (trackUrlMatcher.matches() && !"likes".equals(trackUrlMatcher.group(2))) {
             AudioTrack track = loadTrack(url);
-            return Objects.requireNonNullElse(track, AudioReference.NO_TRACK);
+            if(track == null) {
+                return AudioReference.NO_TRACK;
+            }
+            return track;
         }
 
         Matcher unlistedUrlMatcher = unlistedUrlPattern.matcher(url);
         if (unlistedUrlMatcher.matches()) {
             AudioTrack track = loadTrack(url);
-            return Objects.requireNonNullElse(track, AudioReference.NO_TRACK);
+            if(track == null) {
+                return AudioReference.NO_TRACK;
+            }
+            return track;
         }
 
         return null;
