@@ -51,7 +51,7 @@ public class SoundCloudAudioSourceManager implements AudioSourceManager, HttpCon
     private static final String LIKED_URL_REGEX = "^(?:http://|https://|)(?:www\\.|)(?:m\\.|)soundcloud\\.com/([a-zA-Z0-9-_]+)/likes/?(?:\\?.*|)$";
     private static final String LIKED_USER_URN_REGEX = "\"urn\":\"soundcloud:users:([0-9]+)\",\"username\":\"([^\"]+)\"";
     private static final String SEARCH_PREFIX = "scsearch";
-    private static final String SEARCH_PREFIX_DEFAULT = "scsearch:";
+    public static final String SEARCH_PREFIX_DEFAULT = "scsearch:";
     private static final String SEARCH_REGEX = SEARCH_PREFIX + "\\[([0-9]{1,9}),([0-9]{1,9})\\]:\\s*(.*)\\s*";
     private static final String FULL_TRACK_UNAVAILABLE_MARKER = "SUB_HIGH_TIER";
 
@@ -88,6 +88,21 @@ public class SoundCloudAudioSourceManager implements AudioSourceManager, HttpCon
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    /**
+     * Create an instance.
+     *
+     * @param allowSearch Whether to allow search queries as identifiers
+     */
+    public SoundCloudAudioSourceManager(
+        boolean allowSearch,
+        SoundCloudDataReader dataReader,
+        SoundCloudDataLoader dataLoader,
+        SoundCloudFormatHandler formatHandler,
+        SoundCloudPlaylistLoader playlistLoader
+    ) {
+        this(allowSearch, dataReader, dataLoader, formatHandler, playlistLoader, false);
     }
 
     /**
@@ -312,6 +327,10 @@ public class SoundCloudAudioSourceManager implements AudioSourceManager, HttpCon
             }
         }
 
+        if (tracks.isEmpty()) {
+            return AudioReference.NO_TRACK;
+        }
+
         return new BasicAudioPlaylist("Liked by " + userInfo.name, tracks, null, false);
     }
 
@@ -384,6 +403,10 @@ public class SoundCloudAudioSourceManager implements AudioSourceManager, HttpCon
                     tracks.add(loadFromTrackData(item));
                 }
             }
+        }
+
+        if (tracks.isEmpty()) {
+            return AudioReference.NO_TRACK;
         }
 
         return new BasicAudioPlaylist("Search results for: " + query, tracks, null, true);
